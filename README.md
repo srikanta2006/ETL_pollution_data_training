@@ -1,159 +1,178 @@
-🌫️ Air Quality ETL Pipeline — Tekworks Logistics
+🌆 URBAN AIR QUALITY MONITORING ETL PIPELINE
 
-A complete Extract → Transform → Load → Analyze pipeline that fetches multi-city air-quality data from APIs, cleans & enriches it, loads it into Supabase, and generates a full analytics report + visualizations.
+An end-to-end Python ETL pipeline to extract, transform, load, and analyze urban air quality data using OpenAQ API and Supabase.
 
-🚀 Project Overview
+📌 TABLE OF CONTENTS
 
-This pipeline automates the full lifecycle of air-quality data:
+Introduction
 
-1️⃣ Extract raw environmental data from two APIs (primary + secondary fallback).
-2️⃣ Transform and clean raw JSON into structured tabular datasets.
-3️⃣ Load enriched data into a Supabase PostgreSQL table.
-4️⃣ Analyze the dataset to produce metrics, KPIs, and visual reports.
+Features
 
-🛠️ Tech Stack
-Layer	Technology
-Language	Python 3.12
-Database	Supabase (PostgreSQL)
-Visualizations	Matplotlib + Pandas
-Orchestration	Python Scripts
-Storage	Local CSV Staging
-📂 Project Structure
-ETL_PIPE_LINE_LOGISTICS/
+Project Structure
+
+Configuration
+
+Installation
+
+Usage
+
+Supabase Table Structure
+
+ETL Workflow
+
+Reports & Outputs
+
+Troubleshooting
+
+License
+
+🏁 INTRODUCTION
+
+This project implements an Urban Air Quality Monitoring ETL Pipeline:
+
+Extract: Collects live air quality data from OpenAQ API.
+
+Transform: Cleans and flattens the data, calculates AQI categories, severity scores, and risk levels.
+
+Load: Inserts processed data into a Supabase PostgreSQL database.
+
+Analyze: Generates KPIs, trends, risk distribution, and visualizations.
+
+Ideal for data engineers, environmental analysts, and smart city projects.
+
+✨ FEATURES
+
+✅ Automated data extraction from multiple cities
+
+✅ Data transformation with derived features: AQI category, severity score, risk classification
+
+✅ Integration with Supabase for scalable storage
+
+✅ Generates summary metrics, trends, and visualizations
+
+✅ Modular design: can run extract, transform, load, analysis independently
+
+📁 PROJECT STRUCTURE
+project-root/
 │
-├── extract.py
-├── transform.py
-├── load.py
-├── etl_analysis.py
-├── run_pipeline.py
+├── extract.py          # Extracts AQI JSON from OpenAQ
+├── transform.py        # Cleans & transforms raw data
+├── load.py             # Loads data into Supabase
+├── etl_analysis.py     # Analyzes data & generates reports
+├── run_pipeline.py     # Runs full ETL pipeline
 │
 ├── data/
-│   ├── raw/
-│   ├── staged/
-│   └── processed/
+│   ├── raw/            # Raw JSON files
+│   ├── staged/         # Transformed CSV files
+│   └── processed/      # Analysis outputs & plots
 │
-├── .env        # API Keys + Supabase Keys (ignored)
-├── .gitignore
-└── README.md
+├── requirements.txt    # Python dependencies
+└── README.md           # Project documentation
 
-🔌 1. Setup
-Install Dependencies
+⚙️ CONFIGURATION
+1. CLONE THE REPOSITORY
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
+
+2. CREATE & ACTIVATE VIRTUAL ENVIRONMENT
+python -m venv venv
+
+
+Windows
+
+venv\Scripts\activate
+
+
+macOS / Linux
+
+source venv/bin/activate
+
+3. INSTALL DEPENDENCIES
 pip install -r requirements.txt
 
-Environment Variables
+4. SETUP ENVIRONMENT VARIABLES
 
-Create a .env file:
+Create a .env file in the root:
 
-API_KEY_PRIMARY=your_key
-API_KEY_SECONDARY=your_key
-SUPABASE_URL=your_supabase_url
+# API KEYS
+OPENAQ_API_BASE=https://api.openaq.org/v2/latest
+AQ_CITIES=Delhi,Bengaluru,Hyderabad,Mumbai,Kolkata
+
+# SUPABASE CONFIG
+SUPABASE_URL=https://your-instance.supabase.co
 SUPABASE_KEY=your_service_role_key
 
-🌐 2. Extract Layer
 
-The extract module:
+⚠️ Do not commit .env file. Keep keys secret.
 
-✔ fetches AQI data for multiple cities
-✔ retries with a second API if primary fails
-✔ saves raw JSON into /data/raw/
+🏗️ SUPABASE TABLE STRUCTURE (REQUIRED)
 
-Run extract only:
+Table Name: air_quality_data
 
-python extract.py
+Column	Type
+city	TEXT
+time	TIMESTAMPTZ
+pm10	DOUBLE PRECISION
+pm2_5	DOUBLE PRECISION
+carbon_monoxide	DOUBLE PRECISION
+nitrogen_dioxide	DOUBLE PRECISION
+sulphur_dioxide	DOUBLE PRECISION
+ozone	DOUBLE PRECISION
+uv_index	DOUBLE PRECISION
+severity_score	DOUBLE PRECISION
+risk_flag	TEXT
+latitude	DOUBLE PRECISION
+longitude	DOUBLE PRECISION
+🛠️ ETL WORKFLOW
 
-🔄 3. Transform Layer
+Extract → Fetches JSON data from OpenAQ for multiple cities.
 
-The transform module:
+Transform → Cleans data, calculates AQI, severity, and risk flags.
 
-✔ reads all raw JSON files
-✔ normalizes fields (pm2_5, ozone, uv_index, severity_score, etc.)
-✔ generates risk labels
-✔ outputs clean CSV → /data/staged/air_quality_transformed.csv
+Load → Inserts the transformed data into Supabase table.
 
-Run transform only:
+Analysis → Computes metrics, generates CSV reports & plots.
 
-python transform.py
-
-🛢️ 4. Load Layer (Supabase)
-
-The load module:
-
-✔ reads staged CSV
-✔ inserts rows into Supabase table air_quality_data
-✔ ensures type safety
-✔ avoids duplicate writes
-
-Run load:
-
-python load.py
-
-📊 5. Analysis Layer
-
-The analysis module:
-
-✔ fetches data back from Supabase
-✔ generates KPI metrics
-✔ saves multiple reports:
-
-summary_metrics.csv
-pollution_trends.csv
-city_risk_distribution.csv
-pm2_5_histogram.png
-risk_per_city.png
-pm2_5_hourly_trend.png
-severity_vs_pm2_5.png
-
-
-Run analytics:
-
-python etl_analysis.py
-
-🔁 6. Full Pipeline Runner
-
-Run the entire ETL workflow in one command:
-
+🚀 USAGE
+Run Full ETL Pipeline:
 python run_pipeline.py
 
+Run Modules Individually:
 
-This triggers:
+Extract: python extract.py
 
-1️⃣ Extract
-2️⃣ Transform
-3️⃣ Load
-4️⃣ Analysis
+Transform: python transform.py
 
-and prints a full execution log.
+Load: python load.py
 
-📈 Generated Insights
+Analysis: python etl_analysis.py
 
-The system produces:
+📊 REPORTS & OUTPUTS
 
-Highest pollution city
+Generated reports and plots are saved in data/processed/:
 
-Hourly worst pollution trends
+summary_metrics.csv → Key KPIs
 
-Risk category distribution
+pollution_trends.csv → City-wise pollution trends
 
-Severity correlation
+city_risk_distribution.csv → Risk distribution per city
 
-Histograms + Barplots + Lineplots
+pm2_5_histogram.png → PM2.5 distribution
 
-All exported inside:
+risk_per_city.png → Risk levels per city
 
-data/processed/
+pm2_5_hourly_trend.png → Hourly PM2.5 trends
 
-🧩 Future Enhancements
+severity_vs_pm2_5.png → Severity vs PM2.5 scatter plot
 
-Schedule pipeline with Airflow / Cron
+⚠️ TROUBLESHOOTING
 
-Add predictive modelling (LSTM AQI prediction)
+No numeric data to plot: Ensure risk_flag and severity_score columns exist in Supabase.
 
-Add dashboard (Streamlit / React)
+Supabase connection issues: Verify .env keys.
 
-👨‍💻 Author
+Missing raw files: Check data/raw/ directory and API connectivity.
 
-Srikanta Bellamkonda
-B.Tech Student | Developer | Innovator
-Hyderabad, Telangana 🇮🇳
+📄 LICENSE
 
-LinkedIn: https://www.linkedin.com/in/srikanta-bellamkonda/
+MIT License © 2025
